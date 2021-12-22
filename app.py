@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 
 from server import app, server
 from flask_login import logout_user, current_user
-from views import success, login, login_fd, logout
+from views import dashboard, success, login, login_fd, logout
 
 header = html.Div(
     className='header',
@@ -13,13 +13,18 @@ header = html.Div(
         className='container-width',
         style={'height': '100%'},
         children=[
-            html.Img(
-                src='assets/dash-logo-stripe.svg',
-                className='logo'
-            ),
+            html.A(
+                href='/',
+                children=[
+                    html.Img(
+                        src="https://www.cmp.cl/capmineria/site/artic/20180724/imag/foto_0000000720180724100547.png",
+                        alt="Compañía Minera del Pacífico",
+                        className='logo'
+                    )]
+            ),       
             html.Div(className='links', children=[
-                html.Div(id='user-name', className='link'),
-                html.Div(id='logout', className='link')
+                html.Div(id='user-name', className='user'),
+                html.Div(id='logout', className='logout')
             ])
         ]
     )
@@ -43,6 +48,8 @@ app.layout = html.Div(
               [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/':
+        if current_user.is_authenticated:
+            return dashboard.layout
         return login.layout
     elif pathname == '/login':
         return login.layout
@@ -66,7 +73,7 @@ def display_page(pathname):
     [Input('page-content', 'children')])
 def cur_user(input1):
     if current_user.is_authenticated:
-        return html.Div('Current user: ' + current_user.username)
+        return html.Div('Welcome! ' + current_user.username)
         # 'User authenticated' return username in get_id()
     else:
         return ''
@@ -77,7 +84,7 @@ def cur_user(input1):
     [Input('page-content', 'children')])
 def user_logout(input1):
     if current_user.is_authenticated:
-        return html.A('Logout', href='/logout')
+        return html.A('Logout', href='/logout', className='logout-link')
     else:
         return ''
 
